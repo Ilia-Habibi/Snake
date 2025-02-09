@@ -1,29 +1,33 @@
 import pygame
 from sys import exit
 
+class Food:
+    def __init__(self):
+        self.x = 5
+        self.y = 4
+        self.pos = pygame.math.Vector2(self.x,self.y)
+
+    def draw_food(self):
+        food_rect =pygame.Rect(self.pos.x*cell_size,self.pos.y*cell_size,cell_size,cell_size)
+        pygame.draw.rect(screen,(126,166,114),food_rect)
+
 pygame.init()
-screen = pygame.display.set_mode((800,600))
+cell_size=40
+x_cells=20
+y_cells=15
+screen = pygame.display.set_mode((cell_size*x_cells,cell_size*y_cells))
 pygame.display.set_caption("Snake")
 clock =pygame.time.Clock()
-def draw_gradient_background(surface, top_color, bottom_color):
-    for y in range(600):
-        # Interpolate between the top and bottom colors
-        r = top_color[0] + (bottom_color[0] - top_color[0]) * y // 600
-        g = top_color[1] + (bottom_color[1] - top_color[1]) * y // 600
-        b = top_color[2] + (bottom_color[2] - top_color[2]) * y // 600
-        pygame.draw.line(surface, (r, g, b), (0, y), (800, y))
-
-top_color = (50, 150, 50)  
-bottom_color = (0, 50, 0) 
-
+food = Food()
 
 while True:
     for event in pygame.event.get():
-        if event.type==pygame.QUIT:
+        if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-    draw_gradient_background(screen, top_color, bottom_color)
 
+    screen.fill((175,215,70))
+    food.draw_food()
 
     pygame.display.update()
     clock.tick(60)
