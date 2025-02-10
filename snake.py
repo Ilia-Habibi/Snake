@@ -7,7 +7,9 @@ class FOOD:
 
     def draw_food(self):
         food_rect =pygame.Rect(self.pos.x*cell_size,self.pos.y*cell_size,cell_size,cell_size)
-        pygame.draw.rect(screen,(126,166,114),food_rect)
+        rotated_image = pygame.transform.rotate(load_circle, angle)
+        rotated_rect = rotated_image.get_rect(center=food_rect.center)
+        screen.blit(rotated_image,rotated_rect)
 
     def randomize(self):
         self.x = random.randint(0,x_cells-1)
@@ -82,6 +84,9 @@ clock =pygame.time.Clock()
 main_game = LOGIC()
 screen_update = pygame.USEREVENT
 pygame.time.set_timer(screen_update,200)
+load_circle = pygame.image.load('spinning circle.png').convert_alpha()
+angle = 0 
+rotation_speed = 6
 
 while True:
     for event in pygame.event.get():
@@ -100,7 +105,9 @@ while True:
             if event.key == pygame.K_LEFT and main_game.snake.direction.x != 1:
                 main_game.snake.direction = pygame.math.Vector2(-1,0)
 
-    screen.fill((175,215,70))
+    angle = (angle + rotation_speed)
+
+    screen.fill((175,50,70))
     main_game.draw_stuff()
     pygame.display.update()
     clock.tick(60)
