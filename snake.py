@@ -14,11 +14,17 @@ class Food:
 class SNAKE:
     def __init__(self):
         self.body = [pygame.math.Vector2(5,10),pygame.math.Vector2(6,10)]
+        self.direction = pygame.math.Vector2(1,0)
     
     def draw_snake(self):
         for bead in self.body:
             bead_rect = pygame.Rect(bead.x*cell_size,bead.y*cell_size,cell_size,cell_size)
             pygame.draw.rect(screen,(183,191,122),bead_rect)
+
+    def move_snake(self):
+        body_copy = self.body[:-1]
+        body_copy.insert(0,body_copy[0]+self.direction)
+        self.body = body_copy[:]
 
 pygame.init()
 cell_size=40
@@ -29,12 +35,25 @@ pygame.display.set_caption("Snake")
 clock =pygame.time.Clock()
 food = Food()
 snake = SNAKE()
+screen_update = pygame.USEREVENT
+pygame.time.set_timer(screen_update,150)
 
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+        if event.type == screen_update:
+            snake.move_snake()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                snake.direction = pygame.math.Vector2(0,-1)
+            if event.key == pygame.K_DOWN:
+                snake.direction = pygame.math.Vector2(0,1)
+            if event.key == pygame.K_RIGHT:
+                snake.direction = pygame.math.Vector2(1,0)
+            if event.key == pygame.K_LEFT:
+                snake.direction = pygame.math.Vector2(-1,0)
 
     screen.fill((175,215,70))
     food.draw_food()
