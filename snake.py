@@ -1,20 +1,24 @@
 import pygame,random
 from sys import exit
 
-class Food:
+class FOOD:
     def __init__(self):
-        self.x = random.randint(0,x_cells-1)
-        self.y = random.randint(0,y_cells-1)
-        self.pos = pygame.math.Vector2(self.x,self.y)
+        self.randomize()
 
     def draw_food(self):
         food_rect =pygame.Rect(self.pos.x*cell_size,self.pos.y*cell_size,cell_size,cell_size)
         pygame.draw.rect(screen,(126,166,114),food_rect)
 
+    def randomize(self):
+        self.x = random.randint(0,x_cells-1)
+        self.y = random.randint(0,y_cells-1)
+        self.pos = pygame.math.Vector2(self.x,self.y)
+
 class SNAKE:
     def __init__(self):
         self.body = [pygame.math.Vector2(5,10),pygame.math.Vector2(6,10)]
         self.direction = pygame.math.Vector2(1,0)
+        self.eating = False
     
     def draw_snake(self):
         for bead in self.body:
@@ -22,9 +26,37 @@ class SNAKE:
             pygame.draw.rect(screen,(183,191,122),bead_rect)
 
     def move_snake(self):
-        body_copy = self.body[:-1]
-        body_copy.insert(0,body_copy[0]+self.direction)
-        self.body = body_copy[:]
+        if self.eating == True:
+            body_copy = self.body[:]
+            body_copy.insert(0,body_copy[0]+self.direction)
+            self.body = body_copy[:]
+            self.eating = False
+        else:
+            body_copy = self.body[:-1]
+            body_copy.insert(0,body_copy[0]+self.direction)
+            self.body = body_copy[:]
+
+    def add_bead(self):
+        self.eating = True
+
+class LOGIC:
+    def __init__(self):
+        self.snake = SNAKE()
+        self.food = FOOD()
+
+    def update(self):
+        self.snake.move_snake()
+        self.check_eating()
+
+    def draw_stuff(self):
+        self.food.draw_food()
+        self.snake.draw_snake()
+
+    def check_eating(self):
+        if self.food.pos == self.snake.body[0]:
+            self.food.randomize()
+            self.snake.add_bead()
+
 
 pygame.init()
 cell_size=40
@@ -33,8 +65,7 @@ y_cells=15
 screen = pygame.display.set_mode((cell_size*x_cells,cell_size*y_cells))
 pygame.display.set_caption("Snake")
 clock =pygame.time.Clock()
-food = Food()
-snake = SNAKE()
+main_game = LOGIC()
 screen_update = pygame.USEREVENT
 pygame.time.set_timer(screen_update,150)
 
@@ -44,19 +75,18 @@ while True:
             pygame.quit()
             exit()
         if event.type == screen_update:
-            snake.move_snake()
+            main_game.update()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                snake.direction = pygame.math.Vector2(0,-1)
+                main_game.snake.direction = pygame.math.Vector2(0,-1)
             if event.key == pygame.K_DOWN:
-                snake.direction = pygame.math.Vector2(0,1)
+                main_game.snake.direction = pygame.math.Vector2(0,1)
             if event.key == pygame.K_RIGHT:
-                snake.direction = pygame.math.Vector2(1,0)
+                main_game.snake.direction = pygame.math.Vector2(1,0)
             if event.key == pygame.K_LEFT:
-                snake.direction = pygame.math.Vector2(-1,0)
+                main_game.snake.direction = pygame.math.Vector2(-1,0)
 
     screen.fill((175,215,70))
-    food.draw_food()
-    snake.draw_snake()
+    main_game.draw_stuff()
     pygame.display.update()
     clock.tick(60)
