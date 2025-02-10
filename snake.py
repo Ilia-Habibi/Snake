@@ -1,15 +1,24 @@
-import pygame
+import pygame,random
 from sys import exit
 
 class Food:
     def __init__(self):
-        self.x = 5
-        self.y = 4
+        self.x = random.randint(0,x_cells-1)
+        self.y = random.randint(0,y_cells-1)
         self.pos = pygame.math.Vector2(self.x,self.y)
 
     def draw_food(self):
         food_rect =pygame.Rect(self.pos.x*cell_size,self.pos.y*cell_size,cell_size,cell_size)
         pygame.draw.rect(screen,(126,166,114),food_rect)
+
+class SNAKE:
+    def __init__(self):
+        self.body = [pygame.math.Vector2(5,10),pygame.math.Vector2(6,10)]
+    
+    def draw_snake(self):
+        for bead in self.body:
+            bead_rect = pygame.Rect(bead.x*cell_size,bead.y*cell_size,cell_size,cell_size)
+            pygame.draw.rect(screen,(183,191,122),bead_rect)
 
 pygame.init()
 cell_size=40
@@ -19,6 +28,7 @@ screen = pygame.display.set_mode((cell_size*x_cells,cell_size*y_cells))
 pygame.display.set_caption("Snake")
 clock =pygame.time.Clock()
 food = Food()
+snake = SNAKE()
 
 while True:
     for event in pygame.event.get():
@@ -28,6 +38,6 @@ while True:
 
     screen.fill((175,215,70))
     food.draw_food()
-
+    snake.draw_snake()
     pygame.display.update()
     clock.tick(60)
