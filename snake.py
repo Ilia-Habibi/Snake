@@ -16,7 +16,7 @@ class FOOD:
 
 class SNAKE:
     def __init__(self):
-        self.body = [pygame.math.Vector2(5,10),pygame.math.Vector2(6,10)]
+        self.body = [pygame.math.Vector2(5,10),pygame.math.Vector2(4,10),pygame.math.Vector2(3,10)]
         self.direction = pygame.math.Vector2(1,0)
         self.eating = False
     
@@ -47,6 +47,7 @@ class LOGIC:
     def update(self):
         self.snake.move_snake()
         self.check_eating()
+        self.check_death()
 
     def draw_stuff(self):
         self.food.draw_food()
@@ -57,6 +58,19 @@ class LOGIC:
             self.food.randomize()
             self.snake.add_bead()
 
+    def check_death(self):
+        if not 0 <= self.snake.body[0].x < x_cells:
+            self.game_over()
+        if not 0<= self.snake.body[0].y < y_cells:
+            self.game_over()
+
+        for bead in self.snake.body[1:]:
+            if  bead == self.snake.body[0]:
+                self.game_over()
+
+    def game_over(self):
+        pygame.quit()
+        exit()
 
 pygame.init()
 cell_size=40
@@ -67,7 +81,7 @@ pygame.display.set_caption("Snake")
 clock =pygame.time.Clock()
 main_game = LOGIC()
 screen_update = pygame.USEREVENT
-pygame.time.set_timer(screen_update,150)
+pygame.time.set_timer(screen_update,200)
 
 while True:
     for event in pygame.event.get():
@@ -77,13 +91,13 @@ while True:
         if event.type == screen_update:
             main_game.update()
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
+            if event.key == pygame.K_UP and main_game.snake.direction.y != 1:
                 main_game.snake.direction = pygame.math.Vector2(0,-1)
-            if event.key == pygame.K_DOWN:
+            if event.key == pygame.K_DOWN and main_game.snake.direction.y != -1:
                 main_game.snake.direction = pygame.math.Vector2(0,1)
-            if event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_RIGHT and main_game.snake.direction.x != -1:
                 main_game.snake.direction = pygame.math.Vector2(1,0)
-            if event.key == pygame.K_LEFT:
+            if event.key == pygame.K_LEFT and main_game.snake.direction.x != 1:
                 main_game.snake.direction = pygame.math.Vector2(-1,0)
 
     screen.fill((175,215,70))
