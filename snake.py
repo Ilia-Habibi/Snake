@@ -19,7 +19,7 @@ class FOOD:
 class SNAKE:
     def __init__(self):
         self.body = [pygame.math.Vector2(5,10),pygame.math.Vector2(4,10),pygame.math.Vector2(3,10)]
-        self.direction = pygame.math.Vector2(1,0)
+        self.direction = pygame.math.Vector2(0,0)
         self.eating = False
 
         self.head_up = pygame.image.load('graphics/head_up.png').convert_alpha()
@@ -38,7 +38,7 @@ class SNAKE:
         self.body_tr = pygame.image.load('graphics/body_tr.png').convert_alpha()
         self.body_tl = pygame.image.load('graphics/body_tl.png').convert_alpha()
         self.body_br = pygame.image.load('graphics/body_br.png').convert_alpha()
-        self.body_bl = pygame.image.load('graphics/body_bl.png').convert_alpha()
+        self.body_bl = pygame.image.load('graphics/body_bl.png').convert_alpha() 
     
     def draw_snake(self):
         self.update_head_graphics()
@@ -99,10 +99,15 @@ class SNAKE:
     def add_bead(self):
         self.eating = True
 
+    def reset(self):
+        self.body = [pygame.math.Vector2(5,10),pygame.math.Vector2(4,10),pygame.math.Vector2(3,10)]
+        self.direction = pygame.math.Vector2(0,0)
+
 class LOGIC:
     def __init__(self):
         self.snake = SNAKE()
         self.food = FOOD()
+        self.crunch = pygame.mixer.Sound('crunch.wav')
 
     def update(self):
         self.snake.move_snake()
@@ -119,6 +124,11 @@ class LOGIC:
         if self.food.pos == self.snake.body[0]:
             self.food.randomize()
             self.snake.add_bead()
+            self.crunch.play()
+
+        for block in self.snake.body[1:]:
+            if block == self.food.pos:
+                self.food.randomize()
 
     def check_death(self):
         if not 0 <= self.snake.body[0].x < x_cells:
@@ -131,8 +141,7 @@ class LOGIC:
                 self.game_over()
 
     def game_over(self):
-        pygame.quit()
-        exit()
+        self.snake.reset()
 
     def draw_grass(self):
         grass_color = (167,209,61)
@@ -152,11 +161,13 @@ class LOGIC:
         score = str(len(self.snake.body) - 3)
         score_surface = font1.render(score,True,(56,74,12))
         score_rect = score_surface.get_rect(center=(400,30))
-        screen.blit(score_surface,score_rect)	
         load_rect = pygame.Rect(340,10,cell_size,cell_size)	
         rotated_image = pygame.transform.rotate(load_circle, angle)
         rotated_rect = rotated_image.get_rect(center=load_rect.center)
+        bg_rect = pygame.Rect(338,8,cell_size+score_rect.width+23,cell_size+4)
+        screen.blit(score_surface,score_rect)
         screen.blit(rotated_image,rotated_rect)
+        pygame.draw.rect(screen,(56,74,12),bg_rect,2)
         
 pygame.init()
 cell_size=40
