@@ -113,6 +113,7 @@ class LOGIC:
         self.draw_grass()
         self.food.draw_food()
         self.snake.draw_snake()
+        self.draw_score()
 
     def check_eating(self):
         if self.food.pos == self.snake.body[0]:
@@ -145,7 +146,17 @@ class LOGIC:
                 for col in range(x_cells):
                     if col % 2 != 0:
                         grass_rect = pygame.Rect(col * cell_size,row * cell_size,cell_size,cell_size)
-                        pygame.draw.rect(screen,grass_color,grass_rect)			
+                        pygame.draw.rect(screen,grass_color,grass_rect)	
+
+    def draw_score(self):
+        score = str(len(self.snake.body) - 3)
+        score_surface = font1.render(score,True,(56,74,12))
+        score_rect = score_surface.get_rect(center=(400,30))
+        screen.blit(score_surface,score_rect)	
+        load_rect = pygame.Rect(340,10,cell_size,cell_size)	
+        rotated_image = pygame.transform.rotate(load_circle, angle)
+        rotated_rect = rotated_image.get_rect(center=load_rect.center)
+        screen.blit(rotated_image,rotated_rect)
         
 pygame.init()
 cell_size=40
@@ -160,6 +171,7 @@ pygame.time.set_timer(screen_update,200)
 load_circle = pygame.image.load('graphics/spinning circle.png').convert_alpha()
 angle = 0 
 rotation_speed = 6
+font1 = pygame.font.Font('Million Smiles.otf',25)
 
 while True:
     for event in pygame.event.get():
